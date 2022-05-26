@@ -9,7 +9,7 @@
 ____
 
 ## Documentation & Examples
-### 1) Compile / [Download Precompiled DLL](https://google.com) & Include It in To .NET Framework Project
+### 1) Compile / [Download Precompiled DLL](https://github.com/Cranch-fur/CranchyLib-Networking/releases/tag/Release) & Include It in To .NET Framework Project
 ### 2) Add "using" statement in to your .cs file
 ```c#
 using static CranchyLib.Networking.Main;
