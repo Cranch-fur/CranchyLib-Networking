@@ -12,74 +12,120 @@ ____
 ### 1) Compile / [Download Precompiled DLL](https://github.com/Cranch-fur/CranchyLib-Networking/releases/tag/Release) & Include It in To .NET Framework Project
 ### 2) Add "using" statement in to your .cs file
 ```c#
-using static CranchyLib.Networking.Main;
+using CranchyLib.Networking;
 ```
 
 ### CranchyLib-Networking - List Of What You Can Use
-- `IsJson`
-- `IsBase64`
-- **Networking**
-    - `E_StatusCode`
-    - `SE_ContentType`
-    - `SE_UserAgent`
-    - **Request**
-        - `Get` 
-        - `Get_Async`
-        - `Post`
-        - `Post_Async`
-        - `Download`
-        - `Download_Async`
+**Different Types Determination:**
+- [X] 👽 → Extension
+- [X] :star: → Function
+- [X] :star2: → Async Function
+
+**Main Class:** Networking
+- `IsJson` 👽[string]
+- `IsBase64` 👽[string]
+- `E_StatusCode`
+- `SE_ContentType`
+- `SE_UserAgent`
+- **Request**
+    - `Get` :star:
+    - `Get_Async` :star2:
+    - `Post` :star:
+    - `Post_Async` :star2:
+    - `Download` :star:
+    - `Download_Async` :star2:
 - **Utilities**
+    - **Hashing**
+        - `E_HashAlgorithm`
+        - `GetByteArrayHash` :star:
+        - `GetStringHash` :star:
     - **Windows**
         - `SE_WinGuides`
         - `SE_WinFolder`
-        - `GetFolderPathFromGuide` 
+        - `GetFolderPathFromGuide` :star:
 
 ____
 
-### Sample GET Request
+### Simple GET Request
 ```c#
 string[] headers = new string[]
-            {
-                $"User-Agent: {Networking.SE_UserAgent.Opera_Windows}",
-                "Custom-Header: Example"
-            };
-            
+{
+    $"User-Agent: {Networking.SE_UserAgent.Opera_Windows}",
+    "Custom-Header: Example"
+};
+
 var request = Networking.Request.Get_Async("https://google.com", headers);
-Console.WriteLine($"Status Code: {(int)request.Result.Item1}\n\n" +
-                  $"Content-Type: {request.Result.Item2.Get("Content-Type")} \n\n" +
+Console.WriteLine($"Status Code: {(int)request.Result.Item1} [{request.Result.Item1}]\n" +
+                  $"Content-Type: {request.Result.Item2.Get("Content-Type")}\n" +
                   $"Content: {request.Result.Item3}");
 ```
-#### How our Request Looks In Fiddler (Web Debugging Tool)
-![GET_Fiddler](https://cranchpalace.info/github/assets/cranchylib/networking/GET_Fiddler.png "GET_Fiddler")
-#### What Do We See In Our Program (Content Stripped From Screenshot)
-![GET_ConsoleOutput](https://cranchpalace.info/github/assets/cranchylib/networking/GET_ConsoleOutput.png "GET_ConsoleOutput")
+**REQUEST HEADERS:**
+
+![GETRequest_Headers](https://i.imgur.com/EQFgqOq.png "GETRequest_Headers")
+
+**RESULT:**
+```cmd
+Status Code: 200 [OK]
+Content-Type: text/html; charset=UTF-8
+Content: <!doctype html>...
+```
 
 ____
 
-### Check if String is JSON
+### Downloading The Files
 ```c#
-string example = "{\"Name\": \"Johny\"}";
-Console.WriteLine(example.IsJson());
+var download = Networking.Request.Download_Async("https://i.imgur.com/nfnaz4M.jpeg",
+                                                 Networking.Utilities.Windows.SE_WinFolder.Downloads);
+
+Console.WriteLine($"Success?: {download.Result.Item1}\n" +
+                  $"Downloaded File Path: {download.Result.Item2}");
 ```
-**RESULT:** True | This is default JObject
-```c#
-string example = "[\"Cookie\", \"Jar\"]";
-Console.WriteLine(example.IsJson());
+
+**RESULT:**
+```cmd
+Success?: True
+Downloaded File Path: C:\Users\Cranch\Downloads\nfnaz4M.jpeg
 ```
-**RESULT:** True | This is default JArray
-```c#
-string example = "{\"Name\": \"Johny\"}}";
-Console.WriteLine(example.IsJson());
-```
-**RESULT:** False | There's 2 brackets at the end!
 
 ____
 
-### Let's Download A File!
+### Validating That String is JSON
 ```c#
-var download = Networking.Request.Download_Async("https://cranchpalace.info/github/assets/cranchylib/networking/DOWNLOAD_Cozy.png", Utilities.Windows.SE_WinFolder.Downloads);
-Console.WriteLine(download.Result);
+string json = ...
+Console.WriteLine( json.IsJson() );
 ```
-![DOWNLOAD_Result01](https://cranchpalace.info/github/assets/cranchylib/networking/DOWNLOAD_Result01.png "DOWNLOAD_Result01")
-![DOWNLOAD_Result02](https://cranchpalace.info/github/assets/cranchylib/networking/DOWNLOAD_Result02.png "DOWNLOAD_Result02")
+
+**RESULT: True**
+```json 
+{"Name": "Johny"}
+``` 
+
+**RESULT: True**
+```json
+["Cookie", "Jar"]
+```
+
+**RESULT: False**
+```json
+{"Name": "Johny"}}
+```
+
+**RESULT: False**
+```json
+{Lorem Ipsum}
+```
+
+____
+
+### Hashing The String / Byte Array
+```c#
+string text = "Hello, World!";
+Console.WriteLine($"SHA512 (Default): {Networking.Utilities.Hashing.GetStringHash(text)}\n" +
+                  $"MD5: {Networking.Utilities.Hashing.GetStringHash(text, Networking.Utilities.Hashing.E_HashAlgorithm.MD5)}");
+```
+
+**RESULT**
+```
+SHA512 (Default): N015SpXNz9izWZMYX++bo2jxYNja9DLQi6nx7R5avmzGkpHg+i/gAGpSVw7xjBne9OYXwzzlLvCm5fvjGMsDhw==
+MD5: ZajifYh5KDgxtmS9i38K1A==
+```
