@@ -520,15 +520,17 @@ namespace CranchyLib.Networking
 
                 foreach (string header in headers)
                 {
+                    int index = header.IndexOf(' ');
+
                     if (header.StartsWith("Content-Type:"))
                         request.ContentType = header
-                                                    .Replace("Content-Type:", string.Empty)
-                                                    .Replace(" ", string.Empty);
+                                                    .Remove(index, 1)
+                                                    .Replace("Content-Type:", string.Empty);
 
                     else if (header.StartsWith("User-Agent:"))
                         request.UserAgent = header
-                                                    .Replace("User-Agent:", string.Empty)
-                                                    .Replace(" ", string.Empty);
+                                                    .Remove(index, 1)
+                                                    .Replace("User-Agent:", string.Empty);
 
                     else request.Headers.Add(header);
                 }
@@ -574,15 +576,18 @@ namespace CranchyLib.Networking
 
                 foreach (string header in headers)
                 {
+                    int index = header.IndexOf(' ');
+
                     if (header.StartsWith("Content-Type:"))
                         request.ContentType = header
-                                                    .Replace("Content-Type:", string.Empty)
-                                                    .Replace(" ", string.Empty);
+                                                    .Remove(index, 1)
+                                                    .Replace("Content-Type:", string.Empty);
 
                     else if (header.StartsWith("User-Agent:"))
                         request.UserAgent = header
-                                                    .Replace("User-Agent:", string.Empty)
-                                                    .Replace(" ", string.Empty);
+                                                    .Remove(index, 1)
+                                                    .Replace("User-Agent:", string.Empty);
+
 
                     else request.Headers.Add(header);
                 }
